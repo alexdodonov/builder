@@ -1,5 +1,7 @@
 #
-#    version 1.0.42 - Since now builder can be found in it's repo: https://gitlab.com/aeon.org/builder
+#    Repo: https://gitlab.com/aeon.org/builder
+#
+#    If you have any questions or advises - feel free to contact with the author by email alexey@dodonov.pro
 #
 
 import ftplib , os , io , sys , subprocess , shutil , json , hashlib , re
@@ -434,8 +436,8 @@ def run_phpunit(path , module=''):
     try:
         result = check_output('php c:/php/phpunit.phar ' + path , shell=True)
         matches = re.search('Lines:   ([0-9]{2})\.([0-9]{2})\%', str(result, 'utf-8'))
-        if(not(matches is None) and int(matches.group(1)) < 37):
-            raise Exception('Module test ' + ('' if module == '' else module + ' ') + 'failed. Target threshold is 37. Actual is ' + matches.group(1))
+        if(not(matches is None) and int(matches.group(1)) < 25):
+            raise Exception('Module test ' + ('' if module == '' else module + ' ') + 'failed. Target threshold is 25. Actual is ' + matches.group(1))
         print('SUCCESS : Module ' + ('' if module == '' else module + ' ') + 'checked')
     except subprocess.CalledProcessError as Err:
         print(Err.output.decode('utf-8' , 'ignore').replace('\n' , "\n"))
