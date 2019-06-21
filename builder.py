@@ -20,9 +20,10 @@ from os.path import splitext , join , split
 service_folders = [
     './conf', './tests', './tmp', './vendor', './vendor/{service-name}', './vendor/{service-name}/conf',
     './vendor/{service-name}/include', './vendor/{service-name}/include/php', './vendor/{service-name}/include/js',
-    './vendor/{service-name}/tests', './vendor/{service-name}/vendor', './vendor/{service-name}/vendor/{service-name}-service-logic',
-    './vendor/{service-name}/vendor/{service-name}-service-logic/tests' , 
-    './dns' , './dns/conf' , './dns/include' , './dns/include/php'
+    './vendor/{service-name}/tests', './vendor/{service-name}/vendor', './vendor/{service-name}/vendor/{service-name}-logic',
+    './vendor/{service-name}/vendor/{service-name}-logic/tests' , 
+    './dns' , './dns/conf' , './dns/include' , './dns/include/php' , 
+    './vendor/{service-name}/vendor/{service-name}-model'
 ]
 
 common_service_file_templates = {
@@ -32,42 +33,115 @@ common_service_file_templates = {
     './vendor/{service-name}/test-unit.py' : "import builder\n\nbuilder.run()" ,
     './test-service.json' : "{\n\t\"tests\": [\n\t\t\"--filter {service-class-name}ServiceTest ./tests\"\n\t]\n}" ,
     './test-service.py' : "import builder\n\nbuilder.run()" ,
-    './vendor/{service-name}/vendor/{service-name}-service-logic/test-unit.json' : "{\n\t\"tests\": [\n\t\t\"./tests\"\n\t]\n}",
-    './vendor/{service-name}/vendor/{service-name}-service-logic/test-unit.py' : "import builder\n\nbuilder.run()" , 
-    './dns/records.php' : "<?php\nrequire_once (__DIR__ . '/include/php/dns-utils.php');\n\n// setup environment\nglobal $argv;\n\nif (isset($_SERVER['HTTP_HOST']) && $_SERVER['HTTP_HOST'] == 'scriptlobby.ru') {\n\tset_config('ft');\n\t} elseif (isset($_SERVER['HTTP_HOST']) && ($_SERVER['HTTP_HOST'] == 'localhost' || $_SERVER['HTTP_HOST'] == 'content.script-hunters.local')) {\n\tset_config('local');\n} elseif ($argv !== null && in_array('local', $argv)) {\n\tset_config('local');\n} else {\n\tset_config('prod');\n}\n\nrequire_once (__DIR__ . '/conf/conf.php');\n\n?>" , 
+    './vendor/{service-name}/vendor/{service-name}-logic/test-unit.json' : "{\n\t\"tests\": [\n\t\t\"./tests\"\n\t]\n}",
+    './vendor/{service-name}/vendor/{service-name}-logic/test-unit.py' : "import builder\n\nbuilder.run()" , 
+    './dns/records.php' : "<?php\nrequire_once (__DIR__ . '/include/php/dns-utils.php');\n\n// setup environment\nglobal $argv;\n\nif (isset($_SERVER['HTTP_HOST']) && $_SERVER['HTTP_HOST'] == 'ft-srv') {\n\tset_config('ft');\n\t} elseif (isset($_SERVER['HTTP_HOST']) && ($_SERVER['HTTP_HOST'] == 'localhost' || $_SERVER['HTTP_HOST'] == 'local-srv')) {\n\tset_config('local');\n} elseif ($argv !== null && in_array('local', $argv)) {\n\tset_config('local');\n} else {\n\tset_config('prod');\n}\n\nrequire_once (__DIR__ . '/conf/conf.php');\n\n?>" , 
     './dns/include/php/dns-utils.php' : "<?php\n\n/**\n *    Method returns service setting.\n */\nfunction get_dns_str($Service, $Key1 = false, $Key2 = false)\n{\n\tglobal $DNSRecords;\n\n\tif (isset($DNSRecords[$Service])) {\n\t\tif (is_string($DNSRecords[$Service])) {\n\t\t\treturn ($DNSRecords[$Service]);\n\t\t} else {\n\t\t\tif ($Key1 !== false) {\n\t\t\t\tif ($Key2 !== false) {\n\t\t\t\t\treturn ($DNSRecords[$Service][$Key1][$Key2]);\n\t\t\t\t} else {\n\t\t\t\t\treturn ($DNSRecords[$Service][$Key1]);\n\t\t\t\t}\n\t\t\t} else {\n\t\t\t\treturn ($DNSRecords[$Service]);\n\t\t\t}\n\t\t}\n\t} else {\n\t\tthrow (new Exception('Field "' . $Key1 . '" for "' . $Service . '" service was not set in the DNS'));\n\t}\n}\n\n/**\n * Method sets environment config.\n */\nfunction set_config($ConfigName)\n{\n\tif ($ConfigName == 'prod') {\n\t\tfile_put_contents(__DIR__ . '/../../conf/conf.php', file_get_contents(__DIR__ . '/../../conf/conf-prod.php'));\n\t} elseif ($ConfigName == 'ft') {\n\t\tfile_put_contents(__DIR__ . '/../../conf/conf.php', file_get_contents(__DIR__ . '/../../conf/conf-ft.php'));\n\t} else {\n\t\tfile_put_contents(__DIR__ . '/../../conf/conf.php', file_get_contents(__DIR__ . '/../../conf/conf-local.php'));\n\t}\n}\n\n?>" , 
-    './dns/conf/conf-local.php' : "<?php\n$DNSRecords = [\n\t'auth' => 'http://aut-srv',\n\t'author' => 'http://author-srv',\n];\n\nfunction get_dns_records()\n{\n\tglobal $DNSRecords;\n\n\treturn ($DNSRecords);\n}\n\n?>" , 
-    './dns/conf/conf-ft.php' : "<?php\n$DNSRecords = [\n\t'auth' => 'http://aut-srv',\n\t'author' => 'http://author-srv',\n];\n\nfunction get_dns_records()\n{\n\tglobal $DNSRecords;\n\n\treturn ($DNSRecords);\n}\n\n?>" , 
-    './dns/conf/conf-prod.php' : "<?php\n$DNSRecords = [\n\t'auth' => 'http://aut-srv',\n\t'author' => 'http://author-srv',\n];\n\nfunction get_dns_records()\n{\n\tglobal $DNSRecords;\n\n\treturn ($DNSRecords);\n}\n\n?>" ,  
+    './dns/conf/conf-local.php' : "<?php\n$DNSRecords = [\n\t'auth' => 'http://auth-srv',\n\t'author' => 'http://author-srv',\n];\n\nfunction get_dns_records()\n{\n\tglobal $DNSRecords;\n\n\treturn ($DNSRecords);\n}\n\n?>" , 
+    './dns/conf/conf-ft.php' : "<?php\n$DNSRecords = [\n\t'auth' => 'http://auth-srv',\n\t'author' => 'http://author-srv',\n];\n\nfunction get_dns_records()\n{\n\tglobal $DNSRecords;\n\n\treturn ($DNSRecords);\n}\n\n?>" , 
+    './dns/conf/conf-prod.php' : "<?php\n$DNSRecords = [\n\t'auth' => 'http://auth-srv',\n\t'author' => 'http://author-srv',\n];\n\nfunction get_dns_records()\n{\n\tglobal $DNSRecords;\n\n\treturn ($DNSRecords);\n}\n\n?>" ,  
 }
 
 service_file_templates = {
-    './index.php' : "<?php\nrequire_once( './vendor/service/include/php/include.php' );\nrequire_once( './vendor/anscript/vendor/{service-name}-service-logic/{service-name}-service-logic.php' );\nrequire_once( './vendor/{service-name}/{service-name}.php' );\n\nService::launch('{service-class-name}');\n\n?>",
+    './index.php' : "<?php\nrequire_once( './vendor/service/include/php/include.php' );\nrequire_once( './vendor/anscript/vendor/{service-name}-logic/{service-name}-logic.php' );\nrequire_once( './vendor/{service-name}/{service-name}.php' );\n\nService::launch('{service-class-name}');\n\n?>",
     './build.json' : "{\n\t\"vendor-repo\" : [\n\t\t{\n\t\t\t\"vendors\" : [ \n\t\t\t\t\"dns-client\"\n\t\t\t] , \n\t\t\t\"path\" : \"C:/Users/kcher/YandexDisk-gdever/enterprise/\"\n\t\t} , \n\t\t{\n\t\t\t\"vendors\" : [ \n\t\t\t\t\"router\" , \"service\"\n\t\t\t] , \n\t\t\t\"path\" : \"C:/Users/kcher/YandexDisk-gdever/mezon/vendor/\"\n\t\t}\n\t]\n}",
     './vendor/{service-name}/tests/{service-class-name}UnitTest.php' : "<?php\n\n/**\n * Unit test \n * @author Admin\n */\nclass {service-class-name}UnitTest extends PHPUnit\Framework\TestCase\n{\n}\n\n?>",
-    './tests/{service-class-name}ServiceTest.php' : "<?php\n\n/**\n * Service test \n * @author Admin\n */\nclass {service-class-name}ServiceTest extends PHPUnit\Framework\TestCase\n{\n}\n\n?>" ,
-    './vendor/{service-name}/vendor/{service-name}-service-logic/{service-name}-service-logic.php' : "<?php\n\n/**\n * Service logic\n * \n * @author \n */\nclass {service-class-name}ServiceLogic extends ServiceLogic\n{\n\n\t/**\n\t * Constructor.\n\t *\n\t * @param object $ParamsFetcher\n\t *            - Params fetcher.\n\t * @param object $SecurityProvider\n\t *            - Security provider.\n\t * @param object $Model\n\t *            - Service model.\n\t */\n\tpublic function __construct(object $ParamsFetcher, object $SecurityProvider, $Model = null)\n\t{\n\t\tparent::__construct($ParamsFetcher, $SecurityProvider, $Model);\n\t}\n}\n\n?>" ,
-    './vendor/{service-name}/{service-name}.php' : "<?php\n\n/**\n * Service class.\n * \n * @author \n */\nclass {service-class-name} extends Service\n{\n\n\t/**\n\t * Constructor.\n\t *\n\t * @param mixed $ServiceTransport\n\t *            - Service's transport\n\t * @param mixed $SecurityProvider\n\t *            - Service's security provider;\n\t * @param mixed $ServiceLogic\n\t *            -\n\t *            Service's logic.\n\t * @param mixed $ServiceModel\n\t *            -\n\t *            Service's model.\n\t */\n\tpublic function __construct($ServiceTransport = 'ServiceHTTPTransport', $SecurityProvider = 'ServiceSecurityProvider', $ServiceLogic = '{service-class-name}ServiceLogic', $ServiceModel = 'ServiceModel')\n\t{\n\t\tparent::__construct($ServiceTransport, $SecurityProvider, $ServiceLogic, $ServiceModel);\n\t}\n\n\t/**\n\t * Method inits common servoce's routes.\n\t */\n\tprotected function init_common_routes()\n\t{\n\t\tparent::init_common_routes();\n\n\t\t//$this->ServiceTransport->add_route('/route/path/', 'method_name', 'GET', 'public_call', [\n\t\t//    'content_type' => 'text/html; charset=utf-8'\n\t\t//]);\n\t}\n}\n\n?>" ,
-    './vendor/{service-name}/vendor/{service-name}-service-logic/tests/{service-class-name}LogicUnitTest.php' : "<?php\nrequire_once (__DIR__ . '/../../../../service/vendor/service-logic/service-logic.php');\nrequire_once (__DIR__ . '/../../../../service/vendor/service-logic/vendor/service-logic-unit-tests/service-logic-unit-tests.php');\nrequire_once (__DIR__ . '/../../../../service/vendor/service-model/service-model.php');\n\nrequire_once (__DIR__ . '/../{service-name}-service-logic.php');\n\nclass {service-class-name}ServiceLogicUnitTest extends ServiceLogicUnitTests\n{\n\t/**\n\t * Constructor.\n\t */\n\tpublic function __construct()\n\t{\n\t\tparent::__construct();\n\n\t\t$this->ClassName = '{service-class-name}ServiceLogic';\n\t}\n}\n\n?>" , 
+    './tests/{service-class-name}ServiceTest.php' : "<?php\n\
+require_once (__DIR__ . '/../dns/records.php');\n\
+\n\
+require_once (__DIR__ . '/../vendor/service/vendor/service-tests/service-tests.php');\n\
+\n\
+require_once (__DIR__ . '/../vendor/dns-client/dns-client.php');\n\
+\n\
+/**\n\
+ * Service test\n\
+ *\n\
+ * @author Admin\n\
+ */\n\
+class {service-class-name}ServiceTest extends ServiceTests\n\
+{\n\
+\n\
+    /**\n\
+     * Constructor.\n\
+     */\n\
+    public function __construct()\n\
+    {\n\
+        parent::__construct('{service-name}');\n\
+    }\n\
+}\n\
+\n\
+?>" ,
+    './vendor/{service-name}/vendor/{service-name}-logic/{service-name}-logic.php' : "<?php\n\n/**\n * Service logic\n * \n * @author \n */\nclass {service-class-name}Logic extends ServiceLogic\n{\n\n\t/**\n\t * Constructor.\n\t *\n\t * @param object $ParamsFetcher\n\t *            - Params fetcher.\n\t * @param object $SecurityProvider\n\t *            - Security provider.\n\t * @param object $Model\n\t *            - Service model.\n\t */\n\tpublic function __construct(object $ParamsFetcher, object $SecurityProvider, $Model = null)\n\t{\n\t\tparent::__construct($ParamsFetcher, $SecurityProvider, $Model);\n\t}\n}\n\n?>" ,
+    './vendor/{service-name}/{service-name}.php' : "<?php\n\n/**\n * Service class.\n * \n * @author \n */\nclass {service-class-name} extends Service\n{\n\n\t/**\n\t * Constructor.\n\t *\n\t * @param mixed $ServiceTransport\n\t *            - Service's transport\n\t * @param mixed $SecurityProvider\n\t *            - Service's security provider;\n\t * @param mixed $ServiceLogic\n\t *            -\n\t *            Service's logic.\n\t * @param mixed $ServiceModel\n\t *            -\n\t *            Service's model.\n\t */\n\tpublic function __construct($ServiceTransport = 'ServiceHTTPTransport', $SecurityProvider = 'ServiceSecurityProvider', $ServiceLogic = '{service-class-name}Logic', $ServiceModel = 'ServiceModel')\n\t{\n\t\tparent::__construct($ServiceTransport, $SecurityProvider, $ServiceLogic, $ServiceModel);\n\t}\n\n\t/**\n\t * Method inits common servoce's routes.\n\t */\n\tprotected function init_common_routes()\n\t{\n\t\tparent::init_common_routes();\n\n\t\t//$this->ServiceTransport->add_route('/route/path/', 'method_name', 'GET', 'public_call', [\n\t\t//    'content_type' => 'text/html; charset=utf-8'\n\t\t//]);\n\t}\n}\n\n?>" ,
+    './vendor/{service-name}/vendor/{service-name}-logic/tests/{service-class-name}LogicUnitTest.php' : "<?php\nrequire_once (__DIR__ . '/../../../../service/vendor/service-logic/service-logic.php');\nrequire_once (__DIR__ . '/../../../../service/vendor/service-logic/vendor/service-logic-unit-tests/service-logic-unit-tests.php');\nrequire_once (__DIR__ . '/../../../../service/vendor/service-model/service-model.php');\n\nrequire_once (__DIR__ . '/../{service-name}-logic.php');\n\nclass {service-class-name}LogicUnitTest extends ServiceLogicUnitTests\n{\n\t/**\n\t * Constructor.\n\t */\n\tpublic function __construct()\n\t{\n\t\tparent::__construct();\n\n\t\t$this->ClassName = '{service-class-name}Logic';\n\t}\n}\n\n?>" , 
 }
 
 crud_service_file_templates = {
-    './build.json' : "{\n\t\"vendor-repo\" : [\n\t\t{\n\t\t\t\"vendors\" : [ \n\t\t\t\t\"dns-client\" , \"auth-security-provider\" \n\t\t\t] , \n\t\t\t\"path\" : \"C:/Users/kcher/YandexDisk-gdever/enterprise/\"\n\t\t} , \n\t\t{\n\t\t\t\"vendors\" : [ \n\t\t\t\t\"functional\" , \"custom-client\" , \"rest-client\" , \"router\" , \"service\" , \"crud-service\"\n\t\t\t] , \n\t\t\t\"path\" : \"C:/Users/kcher/YandexDisk-gdever/mezon/vendor/\"\n\t\t}\n\t]\n}" , 
+    './build.json' : "{\n\t\"vendor-repo\" : [\n\t\t{\n\t\t\t\"vendors\" : [ \n\t\t\t\t\"dns-client\" , \"auth-security-provider\" , \"auth-php-client\"\n\t\t\t] , \n\t\t\t\"path\" : \"C:/Users/kcher/YandexDisk-gdever/enterprise/\"\n\t\t} , \n\t\t{\n\t\t\t\"vendors\" : [ \n\t\t\t\t\"functional\" , \"custom-client\" , \"rest-client\" , \"rest-exception\" , \"router\" , \"service\" , \"crud-service\"\n\t\t\t] , \n\t\t\t\"path\" : \"C:/Users/kcher/YandexDisk-gdever/mezon/vendor/\"\n\t\t}\n\t]\n}" , 
 
     './index.php' : "<?php\n\
+require_once ('./dns/records.php');\n\
+\n\
+require_once ('./vendor/service/vendor/service-client/service-client.php');\n\
+require_once ('./vendor/service/vendor/service-security-provider/service-security-provider.php');\n\
+\n\
+require_once ('./vendor/auth-php-client/auth-client.php');\n\
+require_once ('./vendor/auth-security-provider/auth-security-provider.php');\n\
 \n\
 require_once ('./vendor/shop-item/shop-item.php');\n\
 \n\
-// run service\n\
-Service::launch( 'ShopItemService' );\n\
+require_once ('./vendor/shop-item/vendor/shop-item-logic/shop-item-logic.php');\n\
 \n\
-?>",
-    './tests/{service-class-name}ServiceTest.php' : "<?php\n\n/**\n * Service test \n * @author Admin\n */\nclass {service-class-name}ServiceTest extends PHPUnit\Framework\TestCase\n{\n}\n\n?>" ,
-    './vendor/{service-name}/tests/{service-class-name}UnitTest.php' : "<?php\n\nrequire_once (__DIR__ . '/../../service/vendor/service-security-provider/service-security-provider.php');\n\nrequire_once (__DIR__ . '/../../auth-security-provider/auth-security-provider.php');\n\nrequire_once (__DIR__ . '/../../crud-service/vendor/crud-service-unit-tests/crud-service-unit-tests.php');\n\nrequire_once (__DIR__ . '/../vendor/{service-name}-service-logic/{service-name}-service-logic.php');\n\nrequire_once (__DIR__ . '/../{service-name}.php');\n\n/**\n * Unit test\n *\n * @author Admin\n */\nclass {service-class-name}UnitTest extends CRUDServiceUnitTests\n{\n\n\t/**\n\t * Constructor.\n\t */\n\tpublic function __construct()\n\t{\n\t\tparent::__construct('{service-class-name}Service');\n\t}\n}\n\n?>" , 
-    './vendor/{service-name}/{service-name}.php' : "<?php\nrequire_once (__DIR__ . '/../../dns/records.php');\n\nrequire_once (__DIR__ . '/../dns-client/dns-client.php');\n\nrequire_once (__DIR__ . '/../custom-client/custom-client.php');\nrequire_once (__DIR__ . '/../rest-client/rest-client.php');\nrequire_once (__DIR__ . '/../router/router.php');\nrequire_once (__DIR__ . '/../service/service.php');\nrequire_once (__DIR__ . '/../service/vendor/service-client/service-client.php');\nrequire_once (__DIR__ . '/../service/vendor/service-logic/service-logic.php');\nrequire_once (__DIR__ . '/../service/vendor/service-rest-transport/service-rest-transport.php');\nrequire_once (__DIR__ . '/../service/vendor/service-security-provider/service-security-provider.php');\n\nrequire_once (__DIR__ . '/../crud-service/crud-service.php');\nrequire_once (__DIR__ . '/../crud-service/vendor/crud-service-logic/crud-service-logic.php');\nrequire_once (__DIR__ . '/../crud-service/vendor/crud-service-model/crud-service-model.php');\n\nclass {service-class-name}Service extends CRUDService\n{\n\n\t/**\n\t * Constructor.\n\t *\n\t * @param mixed $ServiceTransport\n\t *            - Service's transport.\n\t * @param mixed $SecurityProvider\n\t *            - Service's security provider;\n\t * @param mixed $ServiceLogic\n\t *            -\n\t *            Service's logic.\n\t * @param mixed $ServiceModel\n\t *            -\n\t *            Service's model.\n\t */\n\tpublic function __construct($ServiceTransport = 'ServiceRESTTransport', $SecurityProvider = 'ServiceMockSecurityProvider', $ServiceLogic = '{service-class-name}ServiceLogic', $ServiceModel = '{service-class-name}ServiceModel')\n\t{\n\t\t$Fields = [\n\t\t\t'id' => [\n\t\t\t\t'type' => 'integer',\n\t\t\t\t'title' => 'id'\n\t\t\t]\n\t\t];\n\n\t\tparent::__construct('{service-name}', $Fields, '{service-name}', [], $ServiceTransport, $SecurityProvider, $ServiceLogic, $ServiceModel);\n\t}\n}\n\n?>" , 
-    './vendor/{service-name}/vendor/{service-name}-service-logic/{service-name}-service-logic.php' : "<?php\n\n/**\n * Service logic\n * \n * @author \n */\nclass {service-class-name}ServiceLogic extends CRUDServiceLogic\n{\n}\n\n?>" ,
-    './vendor/{service-name}/vendor/{service-name}-service-logic/tests/{service-class-name}LogicUnitTest.php' : "<?php\nrequire_once (__DIR__ . '/../../../../functional/functional.php');\nrequire_once (__DIR__ . '/../../../../router/router.php');\nrequire_once (__DIR__ . '/../../../../service/vendor/service-logic/service-logic.php');\nrequire_once (__DIR__ . '/../../../../service/vendor/service-logic/vendor/service-logic-unit-tests/service-logic-unit-tests.php');\nrequire_once (__DIR__ . '/../../../../service/vendor/service-console-transport/service-console-transport.php');\nrequire_once (__DIR__ . '/../../../../service/vendor/service-console-transport/vendor/console-request-params/console-request-params.php');\nrequire_once (__DIR__ . '/../../../../service/vendor/service-security-provider/service-security-provider.php');\nrequire_once (__DIR__ . '/../../../../service/vendor/service-mock-security-provider/service-mock-security-provider.php');\n\nrequire_once (__DIR__ . '/../../../../crud-service/vendor/crud-service-logic/vendor/crud-service-logic-unit-tests/crud-service-logic-unit-tests.php');\n\nrequire_once (__DIR__ . '/../shop-item-service-logic.php');\n\nclass ShopItemServiceLogicUnitTest extends CRUDServiceLogicUnitTests\n{\n\n\t/**\n\t * Constructor.\n\t */\n\tpublic function __construct()\n\t{\n\t\tparent::__construct();\n\n\t\t$this->ClassName = 'ShopItemServiceLogic';\n\t}\n}\n\n?>" , 
-    './vendor/{service-name}/vendor/{service-name}-service-logic/phpunit.xml' : "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<phpunit xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:noNamespaceSchemaLocation=\"http://schema.phpunit.de/7.0/phpunit.xsd\" backupGlobals=\"false\" colors=\"true\">\n\t<php>\n\t\t<ini name=\"error_reporting\" value=\"-1\" />\n\t</php>\n\n\t<testsuites>\n\t\t<testsuite name=\"Test Suite\">\n\t\t\t<directory>tests</directory>\n\t\t</testsuite>\n\t</testsuites>\n\n\t<filter>\n\t\t<whitelist>\n\t\t\t<directory>./</directory>\n\t\t\t<exclude>\n\t\t\t\t\t<directory>./tests</directory>\n\t\t\t</exclude>\n\t\t</whitelist>\n\t</filter>\n\n\t<logging>\n\t\t<log type=\"coverage-html\" target=\"./tmp/coverage-phpunit.html\"></log>\n\t\t<log type=\"coverage-text\" target=\"php://stdout\" showOnlySummary=\"true\"></log>\n\t</logging>\n</phpunit>" ,  
+require_once ('./vendor/shop-item/vendor/shop-item-model/shop-item-model.php');\n\
+\n\
+// run service\n\
+Service::launch('ShopItemService', 'ServiceRESTTransport', 'AuthSecurityProvider');\n\
+?>" ,
+
+    './tests/{service-class-name}ServiceTest.php' : "<?php\n\
+require_once (__DIR__ . '/../dns/records.php');\n\
+\n\
+require_once (__DIR__ . '/../vendor/service/vendor/service-tests/service-tests.php');\n\
+\n\
+require_once (__DIR__ . '/../vendor/dns-client/dns-client.php');\n\
+\n\
+/**\n\
+ * Service test\n\
+ *\n\
+ * @author Admin\n\
+ */\n\
+class {service-class-name}ServiceTest extends ServiceTests\n\
+{\n\
+\n\
+    /**\n\
+     * Constructor.\n\
+     */\n\
+    public function __construct()\n\
+    {\n\
+        parent::__construct('{service-name}');\n\
+    }\n\
+}\n\
+\n\
+?>" ,
+    './vendor/{service-name}/tests/{service-class-name}UnitTest.php' : "<?php\n\nrequire_once (__DIR__ . '/../../service/vendor/service-security-provider/service-security-provider.php');\n\nrequire_once (__DIR__ . '/../../auth-security-provider/auth-security-provider.php');\n\nrequire_once (__DIR__ . '/../../crud-service/vendor/crud-service-unit-tests/crud-service-unit-tests.php');\n\nrequire_once (__DIR__ . '/../vendor/{service-name}-logic/{service-name}-logic.php');\n\nrequire_once (__DIR__ . '/../{service-name}.php');\n\n/**\n * Unit test\n *\n * @author Admin\n */\nclass {service-class-name}UnitTest extends CRUDServiceUnitTests\n{\n\n\t/**\n\t * Constructor.\n\t */\n\tpublic function __construct()\n\t{\n\t\tparent::__construct('{service-class-name}Service');\n\t}\n}\n\n?>" , 
+    './vendor/{service-name}/{service-name}.php' : "<?php\nrequire_once (__DIR__ . '/../../dns/records.php');\n\nrequire_once (__DIR__ . '/../dns-client/dns-client.php');\n\nrequire_once (__DIR__ . '/../custom-client/custom-client.php');\nrequire_once (__DIR__ . '/../rest-client/rest-client.php');\nrequire_once (__DIR__ . '/../router/router.php');\nrequire_once (__DIR__ . '/../service/service.php');\nrequire_once (__DIR__ . '/../service/vendor/service-client/service-client.php');\nrequire_once (__DIR__ . '/../service/vendor/service-logic/service-logic.php');\nrequire_once (__DIR__ . '/../service/vendor/service-rest-transport/service-rest-transport.php');\nrequire_once (__DIR__ . '/../service/vendor/service-security-provider/service-security-provider.php');\n\nrequire_once (__DIR__ . '/../crud-service/crud-service.php');\nrequire_once (__DIR__ . '/../crud-service/vendor/crud-service-logic/crud-service-logic.php');\nrequire_once (__DIR__ . '/../crud-service/vendor/crud-service-model/crud-service-model.php');\n\nclass {service-class-name}Service extends CRUDService\n{\n\n\t/**\n\t * Constructor.\n\t *\n\t * @param mixed $ServiceTransport\n\t *            - Service's transport.\n\t * @param mixed $SecurityProvider\n\t *            - Service's security provider;\n\t * @param mixed $ServiceLogic\n\t *            -\n\t *            Service's logic.\n\t * @param mixed $ServiceModel\n\t *            -\n\t *            Service's model.\n\t */\n\tpublic function __construct($ServiceTransport = 'ServiceRESTTransport', $SecurityProvider = 'ServiceMockSecurityProvider', $ServiceLogic = '{service-class-name}Logic', $ServiceModel = '{service-class-name}Model')\n\t{\n\t\t$Fields = [\n\t\t\t'id' => [\n\t\t\t\t'type' => 'integer',\n\t\t\t\t'title' => 'id'\n\t\t\t]\n\t\t];\n\n\t\tparent::__construct('{service-name}', $Fields, '{service-name}', [], $ServiceTransport, $SecurityProvider, $ServiceLogic, $ServiceModel);\n\t}\n}\n\n?>" , 
+    './vendor/{service-name}/vendor/{service-name}-logic/{service-name}-logic.php' : "<?php\n\n/**\n * Service logic\n * \n * @author \n */\nclass {service-class-name}Logic extends CRUDServiceLogic\n{\n}\n\n?>" ,
+    './vendor/{service-name}/vendor/{service-name}-logic/tests/{service-class-name}LogicUnitTest.php' : "<?php\nrequire_once (__DIR__ . '/../../../../functional/functional.php');\nrequire_once (__DIR__ . '/../../../../router/router.php');\nrequire_once (__DIR__ . '/../../../../service/vendor/service-logic/service-logic.php');\nrequire_once (__DIR__ . '/../../../../service/vendor/service-logic/vendor/service-logic-unit-tests/service-logic-unit-tests.php');\nrequire_once (__DIR__ . '/../../../../service/vendor/service-console-transport/service-console-transport.php');\nrequire_once (__DIR__ . '/../../../../service/vendor/service-console-transport/vendor/console-request-params/console-request-params.php');\nrequire_once (__DIR__ . '/../../../../service/vendor/service-security-provider/service-security-provider.php');\nrequire_once (__DIR__ . '/../../../../service/vendor/service-mock-security-provider/service-mock-security-provider.php');\n\nrequire_once (__DIR__ . '/../../../../crud-service/vendor/crud-service-logic/vendor/crud-service-logic-unit-tests/crud-service-logic-unit-tests.php');\n\nrequire_once (__DIR__ . '/../{service-name}-logic.php');\n\nclass {service-class-name}LogicUnitTest extends CRUDServiceLogicUnitTests\n{\n\n\t/**\n\t * Constructor.\n\t */\n\tpublic function __construct()\n\t{\n\t\tparent::__construct();\n\n\t\t$this->ClassName = '{service-class-name}Logic';\n\t}\n}\n\n?>" , 
+    './vendor/{service-name}/vendor/{service-name}-logic/phpunit.xml' : "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<phpunit xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:noNamespaceSchemaLocation=\"http://schema.phpunit.de/7.0/phpunit.xsd\" backupGlobals=\"false\" colors=\"true\">\n\t<php>\n\t\t<ini name=\"error_reporting\" value=\"-1\" />\n\t</php>\n\n\t<testsuites>\n\t\t<testsuite name=\"Test Suite\">\n\t\t\t<directory>tests</directory>\n\t\t</testsuite>\n\t</testsuites>\n\n\t<filter>\n\t\t<whitelist>\n\t\t\t<directory>./</directory>\n\t\t\t<exclude>\n\t\t\t\t\t<directory>./tests</directory>\n\t\t\t</exclude>\n\t\t</whitelist>\n\t</filter>\n\n\t<logging>\n\t\t<log type=\"coverage-html\" target=\"./tmp/coverage-phpunit.html\"></log>\n\t\t<log type=\"coverage-text\" target=\"php://stdout\" showOnlySummary=\"true\"></log>\n\t</logging>\n</phpunit>" ,
+
+    './vendor/{service-name}/vendor/{service-name}-model/{service-name}-model.php' : "<?php\n\
+require_once (__DIR__ . '/../../../crud-service/vendor/crud-service-model/crud-service-model.php');\n\
+\n\
+/**\n\
+ * Model\n\
+ *\n\
+ * @author Admin\n\
+ */\n\
+class ShopItemModel extends CRUDServiceModel\n\
+{\n\
+}\n\
+\n\
+?>"
 }
 
 not_skippable_vendor_files = [ 
@@ -228,7 +302,6 @@ def get_updated_files_ex(src_path, dst_path):
                 dst_file_update_time = datetime.fromtimestamp(dst_file_update_time).strftime('%Y-%m-%d %H:%M:%S.%f')
     
                 if(dst_file_update_time < src_file_update_time):
-                    print(file)
                     result.append(file)
 
     return(result)
@@ -444,7 +517,7 @@ def run_phpunit(path , module=''):
     try:
         result = check_output('php c:/php/phpunit.phar ' + path , shell=True)
         matches = re.search('Lines:[ ]{1,}([0-9]{1,2})\.([0-9]{1,2})\%', str(result, 'utf-8'))
-        if(not(matches is None) and int(matches.group(1)) < 25):
+        if(not(matches is None) and int(matches.group(1)) < 75):
             raise Exception('Module test ' + ('' if module == '' else module + ' ') + 'failed. Target threshold is 25. Actual is ' + matches.group(1))
         print('SUCCESS : Module ' + ('' if module == '' else module + ' ') + 'checked')
     except subprocess.CalledProcessError as Err:
