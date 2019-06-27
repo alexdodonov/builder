@@ -34,4 +34,5 @@ When you run this script - it will deploy all the files from the directory in wi
 More documentation can be found here: https://gitlab.com/aeon.org/builder/wikis/builder.py-home
 
 If you have any questions or advises - feel free to contact with the author by email alexey@dodonov.pro
-Or create ticket here https://gitlab.com/aeon.org/builder/issuesInstallation:
+
+Or create ticket here https://gitlab.com/aeon.org/builder/issues
