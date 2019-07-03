@@ -1,5 +1,5 @@
 #
-#    Repo: https://gitlab.com/aeon.org/builder
+#    Repository: https://gitlab.com/aeon.org/builder
 #
 #    Installation:
 #
