@@ -65,6 +65,12 @@ common_service_file_templates = {
 .settings/\n\
 .buildpath\n\
 .project\n\
+deploy.json\n\
+deploy.py\n\
+deploy-prod.json\n\
+deploy-prod.py\n\
+deploy-ft.json\n\
+deploy-ft.py\n\
 .pydevproject\n\
 tmp/\n\
 __pycache__/" , 
