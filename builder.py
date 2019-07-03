@@ -44,7 +44,6 @@ from os.path import splitext , join , split
 #
 #    Settings
 #
-
 service_folders = [
     './conf', './tests', './tmp', './vendor', './vendor/{service-name}', './vendor/{service-name}/conf',
     './vendor/{service-name}/include', './vendor/{service-name}/include/php', './vendor/{service-name}/include/js',
