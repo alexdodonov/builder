@@ -51,10 +51,24 @@ service_folders = [
     './vendor/{service-name}/tests', './vendor/{service-name}/vendor', './vendor/{service-name}/vendor/{service-name}-logic',
     './vendor/{service-name}/vendor/{service-name}-logic/tests' , 
     './dns' , './dns/conf' , './dns/include' , './dns/include/php' , 
-    './vendor/{service-name}/vendor/{service-name}-model'
+    './vendor/{service-name}/vendor/{service-name}-model' , './.git/info'
 ]
 
 common_service_file_templates = {
+    './.git/info/exclude' : "# git ls-files --others --exclude-from=.git/info/exclude\n\
+# Lines that start with '#' are comments.\n\
+# For a project mostly in C, the following would be a good set of\n\
+# exclude patterns (uncomment them if you want to use them):\n\
+# *.[oa]\n\
+# *~\n\
+\n\
+# some Eclipse staff\n\
+.settings/\n\
+.buildpath\n\
+.project\n\
+.pydevproject\n\
+tmp/\n\
+__pycache__/" , 
     './.htaccess': "# show php errors\nphp_flag display_startup_errors on\nphp_flag display_errors on\nphp_flag html_errors on\n\n<Limit GET POST PUT DELETE>\n  Allow from all\n</Limit>\n\n# use mod_rewrite for pretty URL support\nRewriteEngine on\n\nRewriteRule ^data/files/(.*)$ data/files/$1 [L]\n\nRewriteRule ^vendor/(.*).css$ vendor/$1.css [L]\nRewriteRule ^res/css/(.*)$ res/css/$1 [L]\n\nRewriteRule ^vendor/(.*).js$ vendor/$1.js [L]\nRewriteRule ^res/js/(.*)$ res/js/$1 [L]\n\nRewriteRule ^vendor/(.*).woff2$ vendor/$1.woff2 [L]\nRewriteRule ^res/fonts/(.*)$ res/fonts/$1 [L]\n\nRewriteRule ^vendor/(.*).(jpg|jpeg)$ vendor/$1.$2 [L]\nRewriteRule ^res/images/(.*)$ res/images/$1 [L]\n\nRewriteRule ^res/images/(.*)$ res/images/$1 [L]\nRewriteRule ^([a-z0-9A-Z_\/\.\-\@%\ :,]+)/?(.*)$ index.php?r=$1&%{QUERY_STRING} [L]\nRewriteRule ^/?(.*)$ index.php?r=index&%{QUERY_STRING} [L]" , 
     './build.py' : "import builder\n\nbuilder.run()",
     './vendor/{service-name}/test-unit.json' : "{\n\t\"tests\": [\n\t\t\"./tests\"\n\t]\n}",
@@ -72,7 +86,7 @@ common_service_file_templates = {
 
 service_file_templates = {
     './index.php' : "<?php\nrequire_once( './vendor/service/include/php/include.php' );\nrequire_once( './vendor/anscript/vendor/{service-name}-logic/{service-name}-logic.php' );\nrequire_once( './vendor/{service-name}/{service-name}.php' );\n\nService::launch('{service-class-name}');\n\n?>",
-    './build.json' : "{\n\t\"vendor-repo\" : [\n\t\t{\n\t\t\t\"vendors\" : [ \n\t\t\t\t\"dns-client\"\n\t\t\t] , \n\t\t\t\"path\" : \"C:/Users/kcher/YandexDisk-gdever/enterprise/\"\n\t\t} , \n\t\t{\n\t\t\t\"vendors\" : [ \n\t\t\t\t\"router\" , \"service\"\n\t\t\t] , \n\t\t\t\"path\" : \"C:/Users/kcher/YandexDisk-gdever/mezon/vendor/\"\n\t\t}\n\t]\n}",
+    './build.json' : "{\n\t\"vendor-repo\" : [\n\t\t{\n\t\t\t\"vendors\" : [ \n\t\t\t\t\"dns-client\"\n\t\t\t] , \n\t\t\t\"path\" : \"D:/job/YandexDisk/enterprise/\"\n\t\t} , \n\t\t{\n\t\t\t\"vendors\" : [ \n\t\t\t\t\"router\" , \"service\"\n\t\t\t] , \n\t\t\t\"path\" : \"D:/job/YandexDisk/mezon/vendor/\"\n\t\t}\n\t]\n}",
     './vendor/{service-name}/tests/{service-class-name}UnitTest.php' : "<?php\n\n/**\n * Unit test \n * @author Admin\n */\nclass {service-class-name}UnitTest extends PHPUnit\Framework\TestCase\n{\n}\n\n?>",
     './tests/{service-class-name}ServiceTest.php' : "<?php\n\
 require_once (__DIR__ . '/../dns/records.php');\n\
@@ -105,7 +119,7 @@ class {service-class-name}ServiceTest extends ServiceTests\n\
 }
 
 crud_service_file_templates = {
-    './build.json' : "{\n\t\"vendor-repo\" : [\n\t\t{\n\t\t\t\"vendors\" : [ \n\t\t\t\t\"auth-php-client\" , \"author-php-client\" , \"dns-client\" , \"auth-security-provider\"\n\t\t\t] , \n\t\t\t\"path\" : \"C:/Users/kcher/YandexDisk-gdever/enterprise/\"\n\t\t} , \n\t\t{\n\t\t\t\"vendors\" : [ \n\t\t\t\t\"conf\" , \"functional\" , \"custom-client\" , \"mezon\" , \"pdo-crud\" , \"rest-client\" , \"rest-exception\" , \"router\" , \"service\" , \"singleton\" , \"template-engine\" , \"crud-service\"\n\t\t\t] , \n\t\t\t\"path\" : \"C:/Users/kcher/YandexDisk-gdever/mezon/vendor/\"\n\t\t}\n\t]\n}" , 
+    './build.json' : "{\n\t\"vendor-repo\" : [\n\t\t{\n\t\t\t\"vendors\" : [ \n\t\t\t\t\"auth-php-client\" , \"author-php-client\" , \"dns-client\" , \"auth-security-provider\"\n\t\t\t] , \n\t\t\t\"path\" : \"D:/job/YandexDisk/enterprise/\"\n\t\t} , \n\t\t{\n\t\t\t\"vendors\" : [ \n\t\t\t\t\"conf\" , \"functional\" , \"custom-client\" , \"mezon\" , \"pdo-crud\" , \"rest-client\" , \"rest-exception\" , \"router\" , \"service\" , \"singleton\" , \"template-engine\" , \"crud-service\"\n\t\t\t] , \n\t\t\t\"path\" : \"D:/job/YandexDisk/mezon/vendor/\"\n\t\t}\n\t]\n}" , 
 
     './index.php' : "<?php\n\
 require_once ('./dns/records.php');\n\
