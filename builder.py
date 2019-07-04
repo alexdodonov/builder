@@ -179,16 +179,16 @@ require_once ('./vendor/service/vendor/service-security-provider/service-securit
 require_once ('./vendor/auth-php-client/auth-client.php');\n\
 require_once ('./vendor/auth-security-provider/auth-security-provider.php');\n\
 \n\
-require_once ('./vendor/shop-item/shop-item.php');\n\
+require_once ('./vendor/{service-name}/{service-name}.php');\n\
 \n\
-require_once ('./vendor/shop-item/vendor/shop-item-logic/shop-item-logic.php');\n\
+require_once ('./vendor/{service-name}/vendor/{service-name}-logic/{service-name}-logic.php');\n\
 \n\
-require_once ('./vendor/shop-item/vendor/shop-item-model/shop-item-model.php');\n\
+require_once ('./vendor/{service-name}/vendor/{service-name}-model/{service-name}-model.php');\n\
 \n\
 require_once ('./conf/conf.php');\n\
 \n\
 // run service\n\
-Service::launch('ShopItemService', 'ServiceRESTTransport', 'AuthSecurityProvider');\n\
+Service::launch('{service-class-name}Service', 'ServiceRESTTransport', 'AuthSecurityProvider');\n\
 ?>" , 
 
     './tests/{service-class-name}ServiceTest.php' : "<?php\n\
@@ -203,7 +203,7 @@ require_once (__DIR__ . '/../vendor/dns-client/dns-client.php');\n\
  *\n\
  * @author Admin\n\
  */\n\
-class ShopItemServiceTest extends CRUDServiceTests\n\
+class {service-class-name}ServiceTest extends CRUDServiceTests\n\
 {\n\
 \n\
     /**\n\
@@ -230,7 +230,7 @@ require_once (__DIR__ . '/../../../crud-service/vendor/crud-service-model/crud-s
  *\n\
  * @author Admin\n\
  */\n\
-class ShopItemModel extends CRUDServiceModel\n\
+class {service-class-name}Model extends CRUDServiceModel\n\
 {\n\
 }\n\
 \n\
