@@ -26,6 +26,18 @@
 #
 #    When you run this script - it will deploy all the files from the directory in wich it was run
 #
+#    Running tests
+#
+#    Builder allows you tu run PHPUnit tests. To do this just create another JSON config test.json:
+#
+#    {
+#        "tests": [
+#            "--filter PlugServiceTest ./tests"
+#        ]
+#    }
+#
+#    And then create test.py with the same content as deploy.py in the above example. Then run test.py and rest )
+#
 #    More documentation can be found here: https://gitlab.com/aeon.org/builder/wikis/builder.py-home
 #
 #    If you have any questions or advises - feel free to contact with the author by email alexey@dodonov.pro
