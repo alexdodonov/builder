@@ -190,6 +190,7 @@ require_once ('./vendor/service/vendor/service-security-provider/service-securit
 \n\
 require_once ('./vendor/auth-php-client/auth-client.php');\n\
 require_once ('./vendor/auth-security-provider/auth-security-provider.php');\n\
+require_once ('./vendor/author-php-client/author-client.php');\n\
 \n\
 require_once ('./vendor/{service-name}/{service-name}.php');\n\
 \n\
