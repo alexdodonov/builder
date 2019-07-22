@@ -26,6 +26,25 @@
 #
 #    When you run this script - it will deploy all the files from the directory in wich it was run
 #
+#    It is also possible to deploy on multiple servers:
+#
+#    {
+#        "deploy1" : {
+#            "host" : "your-ftp-host-1" , "user" : "your-ftp-user-1" , 
+#            "password" : "your-ftp-password-1" , "path" : "path-on-your-ftp-server-1"
+#        } , 
+#        "deploy2" : {
+#            "host" : "your-ftp-host-2" , "user" : "your-ftp-user-2" , 
+#            "password" : "your-ftp-password-2" , "path" : "path-on-your-ftp-server-2"
+#        } , 
+#        "order" : [
+#            { "step" : "deploy1" , "type" : "ftp" } , 
+#            { "step" : "deploy2" , "type" : "ftp" }
+#        ]
+#    }
+#
+#    The config above tells Builder that it is necessary to deploy project on two servers via FTP.
+#
 #    Running tests
 #
 #    Builder allows you tu run PHPUnit tests. To do this just create another JSON config test.json:
