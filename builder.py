@@ -114,7 +114,27 @@ __pycache__/" ,
     './vendor/{service-name}/vendor/{service-name}-logic/test-unit.json' : "{\n\t\"tests\": [\n\t\t\"./tests\"\n\t]\n}",
     './vendor/{service-name}/vendor/{service-name}-logic/test-unit.py' : "import builder\n\nbuilder.run()" , 
     './dns/records.php' : "<?php\nrequire_once (__DIR__ . '/include/php/dns-utils.php');\n\n// setup environment\nglobal $argv;\n\nif (isset($_SERVER['HTTP_HOST']) && $_SERVER['HTTP_HOST'] == 'ft-srv') {\n\tset_config('ft');\n} elseif (isset($_SERVER['HTTP_HOST']) && ($_SERVER['HTTP_HOST'] == 'localhost' || $_SERVER['HTTP_HOST'] == 'local-srv')) {\n\tset_config('local');\n} elseif ($argv !== null && in_array('local', $argv)) {\n\tset_config('local');\n} else {\n\tset_config('prod');\n}\n\nrequire_once (__DIR__ . '/conf/conf.php');\n\n?>" , 
-    './dns/include/php/dns-utils.php' : "<?php\n\n/**\n *    Method returns service setting.\n */\nfunction get_dns_str($Service, $Key1 = false, $Key2 = false)\n{\n\tglobal $DNSRecords;\n\n\tif (isset($DNSRecords[$Service])) {\n\t\tif (is_string($DNSRecords[$Service])) {\n\t\t\treturn ($DNSRecords[$Service]);\n\t\t} else {\n\t\t\tif ($Key1 !== false) {\n\t\t\t\tif ($Key2 !== false) {\n\t\t\t\t\treturn ($DNSRecords[$Service][$Key1][$Key2]);\n\t\t\t\t} else {\n\t\t\t\t\treturn ($DNSRecords[$Service][$Key1]);\n\t\t\t\t}\n\t\t\t} else {\n\t\t\t\treturn ($DNSRecords[$Service]);\n\t\t\t}\n\t\t}\n\t} else {\n\t\tthrow (new Exception('Field "' . $Key1 . '" for "' . $Service . '" service was not set in the DNS'));\n\t}\n}\n\n/**\n * Method sets environment config.\n */\nfunction set_config($ConfigName)\n{\n\tif ($ConfigName == 'prod') {\n\t\tfile_put_contents(__DIR__ . '/../../conf/conf.php', file_get_contents(__DIR__ . '/../../conf/conf-prod.php'));\n\t} elseif ($ConfigName == 'ft') {\n\t\tfile_put_contents(__DIR__ . '/../../conf/conf.php', file_get_contents(__DIR__ . '/../../conf/conf-ft.php'));\n\t} else {\n\t\tfile_put_contents(__DIR__ . '/../../conf/conf.php', file_get_contents(__DIR__ . '/../../conf/conf-local.php'));\n\t}\n}\n\n?>" , 
+    './dns/include/php/dns-utils.php' : "<?php\n\
+\n\
+/**\n\
+ * Method returns service setting.\n\
+ */\n\
+function get_dns_str($Service, $Key1 = false)\n\
+{\n\
+    global $DNSRecords;\n\
+\n\
+    if (isset($DNSRecords[$Service])) {\n\
+        if (is_string($DNSRecords[$Service])) {\n\
+            return ($DNSRecords[$Service]);\n\
+        } else {\n\
+            return ($DNSRecords[$Service][$Key1]);\n\
+        }\n\
+    } else {\n\
+        throw (new Exception('Field  . $Key1 .  for  . $Service .  service was not set in the DNS'));\n\
+    }\n\
+}\n\
+\n\
+?>" , 
     './dns/conf/conf-local.php' : "<?php\n$DNSRecords = [\n\t'auth' => 'http://auth-srv',\n\t'author' => 'http://author-srv',\n];\n\nfunction get_dns_records()\n{\n\tglobal $DNSRecords;\n\n\treturn ($DNSRecords);\n}\n\n?>" , 
     './dns/conf/conf-ft.php' : "<?php\n$DNSRecords = [\n\t'auth' => 'http://auth-srv',\n\t'author' => 'http://author-srv',\n];\n\nfunction get_dns_records()\n{\n\tglobal $DNSRecords;\n\n\treturn ($DNSRecords);\n}\n\n?>" , 
     './dns/conf/conf-prod.php' : "<?php\n$DNSRecords = [\n\t'auth' => 'http://auth-srv',\n\t'author' => 'http://author-srv',\n];\n\nfunction get_dns_records()\n{\n\tglobal $DNSRecords;\n\n\treturn ($DNSRecords);\n}\n\n?>" ,
