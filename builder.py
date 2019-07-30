@@ -564,6 +564,9 @@ def copy_sources_to_ftp(host , login , password , server_path , files):
 
     ftp_session.quit()
 
+    # store upload time, this will fix bug when after deploy tests and we need to redeploy sources once again
+    store_date_time()
+
 
 #
 #    Method returns a list of updated or all prohect's filestobe deployed
@@ -686,14 +689,21 @@ def run_phpunit(path , module=''):
 
 
 #
-#    Final actions
+#    Method stores date and time of the script execution
 #
-def finish_actions():
+def store_date_time():
     safe_create_folder('./tmp/')
 
     file_stream = open('./tmp/' + run_settings , 'wt')
     file_stream.write(str(datetime.now()))
     file_stream.close()
+
+
+#
+#    Final actions
+#
+def finish_actions():
+    store_date_time()
 
     clear_temporary_vendors()
 
