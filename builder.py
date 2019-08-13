@@ -57,6 +57,28 @@
 #
 #    And then create test.py with the same content as deploy.py in the above example. Then run test.py and rest )
 #
+#    Deploy and test
+#
+#    You can prepend and postpend your deploy command with testing section. If tests will fail, then deploy will not be run. See the deploy script below:
+#
+#    {
+#        "predeploy-tests" : [
+#            "./tests/local"
+#        ] , 
+#        "deploy" : {
+#            "host" : "your-ftp-host" , "user" : "your-ftp-user" , 
+#            "password" : "your-ftp-password" , "path" : "path-on-your-ftp-server"
+#        } , 
+#        "afterdeploy-tests" : [
+#            "./tests/prod"
+#        ] , 
+#        "order" : [
+#            { "step" : "predeploy-tests" , "type" : "tests" } , 
+#            { "step" : "deploy" , "type" : "ftp" } , 
+#            { "step" : "afterdeploy-tests" , "type" : "tests" }
+#        ]
+#    }
+#
 #    More documentation can be found here: https://gitlab.com/aeon.org/builder/wikis/builder.py-home
 #
 #    If you have any questions or advises - feel free to contact with the author by email alexey@dodonov.pro
