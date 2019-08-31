@@ -356,6 +356,8 @@ non_deployable_files = [
     'local.json' , '.md' , 'phpunit.xml' , '/tests\\' , '\\tests/' , '\\tests\\'
 ]
 
+threshold = 95
+
 #
 #    Globals
 #
@@ -720,9 +722,9 @@ def run_phpunit(path , module=''):
     try:
         result = check_output('php c:/php/phpunit.phar ' + path , shell=True)
         matches = re.search('Lines:[ ]{1,}([0-9]{1,2})\.([0-9]{1,2})\%', str(result, 'utf-8'))
-        target_threshold = 75
-        if(not(matches is None) and int(matches.group(1)) < target_threshold):
-            raise Exception('Module test ' + ('' if module == '' else module + ' ') + 'failed. Target threshold is ' + str(target_threshold) + '. Actual is ' + matches.group(1))
+
+        if(not(matches is None) and int(matches.group(1)) < threshold):
+            raise Exception('Module test ' + ('' if module == '' else module + ' ') + 'failed. Target threshold is ' + str(threshold) + '. Actual is ' + matches.group(1))
         print('SUCCESS : Module ' + ('' if module == '' else module + ' ') + 'checked')
     except subprocess.CalledProcessError as Err:
         print(Err.output.decode('utf-8' , 'ignore').replace('\n' , "\n"))
@@ -924,6 +926,22 @@ def process_tests_step(tests):
         run_phpunit(test , os.path.basename(os.path.dirname(test)))
 
 
+# 
+#    Method runs only specified test suite
+#
+def process_test_suite_step(test_suite):
+    if("component-dir" in test_suite.keys()):
+        os.chdir(test_suite.get("component-dir"))
+        module = os.path.basename(test_suite.get("component-dir"))
+    else:
+        module = "%current%"
+
+    run_phpunit(test_suite.get("tests-dir") , module)
+
+    if("component-dir" in test_suite.keys()):
+        os.chdir(os.path.dirname(sys.argv[ 0 ]))
+
+
 #
 #    Method processess shell step
 #
@@ -944,29 +962,20 @@ def run_steps_in_custom_order(config):
         if(step.get('type') == 'tests'):
             process_tests_step(config.get(step.get('step')))
 
+        if(step.get('type') == 'test-suite'):
+            process_test_suite_step(config.get(step.get('step')))
+
         if(step.get('type') == 'shell'):
             process_shell_step(config.get(step.get('step')))
 
         if(step.get('type') == 'ftp'):
-            if 'mode' in config.get(step.get('step')).keys() and config.get(step.get('step')).get('mode') == 'redeploy':
-                redeploy_to_ftp(
-                    config.get(step.get('step')).get('host') , config.get(step.get('step')).get('user') ,
-                    config.get(step.get('step')).get('password') , config.get(step.get('step')).get('path')
-                )
-            else:
-                deploy_to_ftp(
-                    config.get(step.get('step')).get('host') , config.get(step.get('step')).get('user') ,
-                    config.get(step.get('step')).get('password') , config.get(step.get('step')).get('path')
-                )
+            process_ftp_section(config, step.get('step'))
 
 
 #
-#    Method runs JSON config
+#    Process repo sections
 #
-def run_script(config):
-    if('order' in config):
-        run_steps_in_custom_order(config)
-
+def process_repo_sections(config):
     if('repo' in config):
         for batch in config.get('repo'):
             copy_vendors(batch.get('vendors') , batch.get('path'))
@@ -981,20 +990,37 @@ def run_script(config):
     if('temporary-repo' in config):
         process_temporary_repo_step(config.get('temporary-repo'))
 
-    if('tests' in config):
-        process_tests_step(config.get('tests'))
 
-    if('ftp' in config):
-        if 'mode' in config.get('ftp').keys() and config.get('ftp').get('mode') == 'redeploy':
+#
+#    Process ftp step
+#
+def process_ftp_section(config, step):
+    if(step in config):
+        if 'mode' in config.get(step).keys() and config.get(step).get('mode') == 'redeploy':
             redeploy_to_ftp(
-                config.get('ftp').get('host') , config.get('ftp').get('user') ,
-                config.get('ftp').get('password') , config.get('ftp').get('path')
+                config.get(step).get('host') , config.get(step).get('user') ,
+                config.get(step).get('password') , config.get(step).get('path')
             )
         else:
             deploy_to_ftp(
-                config.get('ftp').get('host') , config.get('ftp').get('user') ,
-                config.get('ftp').get('password') , config.get('ftp').get('path')
+                config.get(step).get('host') , config.get(step).get('user') ,
+                config.get(step).get('password') , config.get(step).get('path')
             )
+
+
+#
+#    Method runs JSON config
+#
+def run_script(config):
+    if('order' in config):
+        run_steps_in_custom_order(config)
+    else:
+        process_repo_sections(config)
+
+        if('tests' in config):
+            process_tests_step(config.get('tests'))
+
+        process_ftp_section(config, 'ftp')
 
 
 #
