@@ -101,8 +101,8 @@ service_folders = [
     './conf', './tests', './tmp', './vendor', './vendor/{service-name}', './vendor/{service-name}/conf',
     './vendor/{service-name}/include', './vendor/{service-name}/include/php', './vendor/{service-name}/include/js',
     './vendor/{service-name}/tests', './vendor/{service-name}/vendor', './vendor/{service-name}/vendor/{service-name}-logic',
-    './vendor/{service-name}/vendor/{service-name}-logic/tests' , 
-    './dns' , './dns/conf' , './dns/include' , './dns/include/php' , 
+    './vendor/{service-name}/vendor/{service-name}-logic/tests' ,
+    './dns' , './dns/conf' , './dns/include' , './dns/include/php' ,
     './vendor/{service-name}/vendor/{service-name}-model' , './.git/info'
 ]
 
@@ -126,16 +126,16 @@ deploy-ft.json\n\
 deploy-ft.py\n\
 .pydevproject\n\
 tmp/\n\
-__pycache__/" , 
-    './.htaccess': "# show php errors\nphp_flag display_startup_errors on\nphp_flag display_errors on\nphp_flag html_errors on\n\n<Limit GET POST PUT DELETE>\n  Allow from all\n</Limit>\n\n# use mod_rewrite for pretty URL support\nRewriteEngine on\n\nRewriteRule ^data/files/(.*)$ data/files/$1 [L]\n\nRewriteRule ^vendor/(.*).css$ vendor/$1.css [L]\nRewriteRule ^res/css/(.*)$ res/css/$1 [L]\n\nRewriteRule ^vendor/(.*).js$ vendor/$1.js [L]\nRewriteRule ^res/js/(.*)$ res/js/$1 [L]\n\nRewriteRule ^vendor/(.*).woff2$ vendor/$1.woff2 [L]\nRewriteRule ^res/fonts/(.*)$ res/fonts/$1 [L]\n\nRewriteRule ^vendor/(.*).(jpg|jpeg)$ vendor/$1.$2 [L]\nRewriteRule ^res/images/(.*)$ res/images/$1 [L]\n\nRewriteRule ^res/images/(.*)$ res/images/$1 [L]\nRewriteRule ^([a-z0-9A-Z_\/\.\-\@%\ :,]+)/?(.*)$ index.php?r=$1&%{QUERY_STRING} [L]\nRewriteRule ^/?(.*)$ index.php?r=index&%{QUERY_STRING} [L]" , 
+__pycache__/" ,
+    './.htaccess': "# show php errors\nphp_flag display_startup_errors on\nphp_flag display_errors on\nphp_flag html_errors on\n\n<Limit GET POST PUT DELETE>\n  Allow from all\n</Limit>\n\n# use mod_rewrite for pretty URL support\nRewriteEngine on\n\nRewriteRule ^data/files/(.*)$ data/files/$1 [L]\n\nRewriteRule ^vendor/(.*).css$ vendor/$1.css [L]\nRewriteRule ^res/css/(.*)$ res/css/$1 [L]\n\nRewriteRule ^vendor/(.*).js$ vendor/$1.js [L]\nRewriteRule ^res/js/(.*)$ res/js/$1 [L]\n\nRewriteRule ^vendor/(.*).woff2$ vendor/$1.woff2 [L]\nRewriteRule ^res/fonts/(.*)$ res/fonts/$1 [L]\n\nRewriteRule ^vendor/(.*).(jpg|jpeg)$ vendor/$1.$2 [L]\nRewriteRule ^res/images/(.*)$ res/images/$1 [L]\n\nRewriteRule ^res/images/(.*)$ res/images/$1 [L]\nRewriteRule ^([a-z0-9A-Z_\/\.\-\@%\ :,]+)/?(.*)$ index.php?r=$1&%{QUERY_STRING} [L]\nRewriteRule ^/?(.*)$ index.php?r=index&%{QUERY_STRING} [L]" ,
     './build.py' : "import builder\n\nbuilder.run()",
     './vendor/{service-name}/test-unit.json' : "{\n\t\"tests\": [\n\t\t\"./tests\"\n\t]\n}",
     './vendor/{service-name}/test-unit.py' : "import builder\n\nbuilder.run()" ,
     './test-service.json' : "{\n\t\"tests\": [\n\t\t\"--filter {service-class-name}ServiceTest ./tests local\"\n\t]\n}" ,
     './test-service.py' : "import builder\n\nbuilder.run()" ,
     './vendor/{service-name}/vendor/{service-name}-logic/test-unit.json' : "{\n\t\"tests\": [\n\t\t\"./tests\"\n\t]\n}",
-    './vendor/{service-name}/vendor/{service-name}-logic/test-unit.py' : "import builder\n\nbuilder.run()" , 
-    './dns/records.php' : "<?php\nrequire_once (__DIR__ . '/include/php/dns-utils.php');\n\n// setup environment\nglobal $argv;\n\nif (isset($_SERVER['HTTP_HOST']) && $_SERVER['HTTP_HOST'] == 'ft-srv') {\n\tset_config('ft');\n} elseif (isset($_SERVER['HTTP_HOST']) && ($_SERVER['HTTP_HOST'] == 'localhost' || $_SERVER['HTTP_HOST'] == 'local-srv')) {\n\tset_config('local');\n} elseif ($argv !== null && in_array('local', $argv)) {\n\tset_config('local');\n} else {\n\tset_config('prod');\n}\n\nrequire_once (__DIR__ . '/conf/conf.php');\n\n?>" , 
+    './vendor/{service-name}/vendor/{service-name}-logic/test-unit.py' : "import builder\n\nbuilder.run()" ,
+    './dns/records.php' : "<?php\nrequire_once (__DIR__ . '/include/php/dns-utils.php');\n\n// setup environment\nglobal $argv;\n\nif (isset($_SERVER['HTTP_HOST']) && $_SERVER['HTTP_HOST'] == 'ft-srv') {\n\tset_config('ft');\n} elseif (isset($_SERVER['HTTP_HOST']) && ($_SERVER['HTTP_HOST'] == 'localhost' || $_SERVER['HTTP_HOST'] == 'local-srv')) {\n\tset_config('local');\n} elseif ($argv !== null && in_array('local', $argv)) {\n\tset_config('local');\n} else {\n\tset_config('prod');\n}\n\nrequire_once (__DIR__ . '/conf/conf.php');\n\n?>" ,
     './dns/include/php/dns-utils.php' : "<?php\n\
 \n\
 /**\n\
@@ -156,9 +156,9 @@ function get_dns_str($Service, $Key1 = false)\n\
     }\n\
 }\n\
 \n\
-?>" , 
-    './dns/conf/conf-local.php' : "<?php\n$DNSRecords = [\n\t'auth' => 'http://auth-srv',\n\t'author' => 'http://author-srv',\n];\n\nfunction get_dns_records()\n{\n\tglobal $DNSRecords;\n\n\treturn ($DNSRecords);\n}\n\n?>" , 
-    './dns/conf/conf-ft.php' : "<?php\n$DNSRecords = [\n\t'auth' => 'http://auth-srv',\n\t'author' => 'http://author-srv',\n];\n\nfunction get_dns_records()\n{\n\tglobal $DNSRecords;\n\n\treturn ($DNSRecords);\n}\n\n?>" , 
+?>" ,
+    './dns/conf/conf-local.php' : "<?php\n$DNSRecords = [\n\t'auth' => 'http://auth-srv',\n\t'author' => 'http://author-srv',\n];\n\nfunction get_dns_records()\n{\n\tglobal $DNSRecords;\n\n\treturn ($DNSRecords);\n}\n\n?>" ,
+    './dns/conf/conf-ft.php' : "<?php\n$DNSRecords = [\n\t'auth' => 'http://auth-srv',\n\t'author' => 'http://author-srv',\n];\n\nfunction get_dns_records()\n{\n\tglobal $DNSRecords;\n\n\treturn ($DNSRecords);\n}\n\n?>" ,
     './dns/conf/conf-prod.php' : "<?php\n$DNSRecords = [\n\t'auth' => 'http://auth-srv',\n\t'author' => 'http://author-srv',\n];\n\nfunction get_dns_records()\n{\n\tglobal $DNSRecords;\n\n\treturn ($DNSRecords);\n}\n\n?>" ,
     './deploy-prod.json' : "{\n\
     \"predeploy-tests\" : [\n\
@@ -177,7 +177,7 @@ function get_dns_str($Service, $Key1 = false)\n\
         { \"step\" : \"deploy\" , \"type\" : \"ftp\" } , \n\
         { \"step\" : \"afterdeploy-tests\" , \"type\" : \"tests\" }\n\
     ]\n\
-}" , 
+}" ,
     './deploy-ft.json' : "{\n\
     \"predeploy-tests\" : [\n\
         \"./vendor/functional/tests\" , \n\
@@ -195,13 +195,13 @@ function get_dns_str($Service, $Key1 = false)\n\
         { \"step\" : \"deploy\" , \"type\" : \"ftp\" } , \n\
         { \"step\" : \"afterdeploy-tests\" , \"type\" : \"tests\" }\n\
     ]\n\
-}" , 
+}" ,
     "deploy-ft.py" : "import builder\n\
 \n\
-builder.run()" , 
+builder.run()" ,
     "deploy-prod.py" : "import builder\n\
 \n\
-builder.run()" , 
+builder.run()" ,
 }
 
 service_file_templates = {
@@ -232,14 +232,14 @@ class {service-class-name}ServiceTest extends ServiceTests\n\
     }\n\
 }\n\
 \n\
-?>" , 
+?>" ,
     './vendor/{service-name}/vendor/{service-name}-logic/{service-name}-logic.php' : "<?php\n\n/**\n * Service logic\n * \n * @author \n */\nclass {service-class-name}Logic extends ServiceLogic\n{\n\n\t/**\n\t * Constructor.\n\t *\n\t * @param object $ParamsFetcher\n\t *            - Params fetcher.\n\t * @param object $SecurityProvider\n\t *            - Security provider.\n\t * @param object $Model\n\t *            - Service model.\n\t */\n\tpublic function __construct(object $ParamsFetcher, object $SecurityProvider, $Model = null)\n\t{\n\t\tparent::__construct($ParamsFetcher, $SecurityProvider, $Model);\n\t}\n}\n\n?>" ,
     './vendor/{service-name}/{service-name}.php' : "<?php\n\n/**\n * Service class.\n * \n * @author \n */\nclass {service-class-name} extends Service\n{\n\n\t/**\n\t * Constructor.\n\t *\n\t * @param mixed $ServiceTransport\n\t *            - Service's transport\n\t * @param mixed $SecurityProvider\n\t *            - Service's security provider;\n\t * @param mixed $ServiceLogic\n\t *            -\n\t *            Service's logic.\n\t * @param mixed $ServiceModel\n\t *            -\n\t *            Service's model.\n\t */\n\tpublic function __construct($ServiceTransport = 'ServiceHTTPTransport', $SecurityProvider = 'ServiceSecurityProvider', $ServiceLogic = '{service-class-name}Logic', $ServiceModel = 'ServiceModel')\n\t{\n\t\tparent::__construct($ServiceTransport, $SecurityProvider, $ServiceLogic, $ServiceModel);\n\t}\n\n\t/**\n\t * Method inits common servoce's routes.\n\t */\n\tprotected function init_common_routes()\n\t{\n\t\tparent::init_common_routes();\n\n\t\t//$this->ServiceTransport->add_route('/route/path/', 'method_name', 'GET', 'public_call', [\n\t\t//    'content_type' => 'text/html; charset=utf-8'\n\t\t//]);\n\t}\n}\n\n?>" ,
-    './vendor/{service-name}/vendor/{service-name}-logic/tests/{service-class-name}LogicUnitTest.php' : "<?php\nrequire_once (__DIR__ . '/../../../../service/vendor/service-logic/service-logic.php');\nrequire_once (__DIR__ . '/../../../../service/vendor/service-logic/vendor/service-logic-unit-tests/service-logic-unit-tests.php');\nrequire_once (__DIR__ . '/../../../../service/vendor/service-model/service-model.php');\n\nrequire_once (__DIR__ . '/../{service-name}-logic.php');\n\nclass {service-class-name}LogicUnitTest extends ServiceLogicUnitTests\n{\n\t/**\n\t * Constructor.\n\t */\n\tpublic function __construct()\n\t{\n\t\tparent::__construct();\n\n\t\t$this->ClassName = '{service-class-name}Logic';\n\t}\n}\n\n?>" , 
+    './vendor/{service-name}/vendor/{service-name}-logic/tests/{service-class-name}LogicUnitTest.php' : "<?php\nrequire_once (__DIR__ . '/../../../../service/vendor/service-logic/service-logic.php');\nrequire_once (__DIR__ . '/../../../../service/vendor/service-logic/vendor/service-logic-unit-tests/service-logic-unit-tests.php');\nrequire_once (__DIR__ . '/../../../../service/vendor/service-model/service-model.php');\n\nrequire_once (__DIR__ . '/../{service-name}-logic.php');\n\nclass {service-class-name}LogicUnitTest extends ServiceLogicUnitTests\n{\n\t/**\n\t * Constructor.\n\t */\n\tpublic function __construct()\n\t{\n\t\tparent::__construct();\n\n\t\t$this->ClassName = '{service-class-name}Logic';\n\t}\n}\n\n?>" ,
 }
 
 crud_service_file_templates = {
-    './build.json' : "{\n\t\"vendor-repo\" : [\n\t\t{\n\t\t\t\"vendors\" : [ \n\t\t\t\t\"auth-php-client\" , \"author-php-client\" , \"dns-client\" , \"auth-security-provider\"\n\t\t\t] , \n\t\t\t\"path\" : \"D:/job/YandexDisk/enterprise/\"\n\t\t} , \n\t\t{\n\t\t\t\"vendors\" : [ \n\t\t\t\t\"conf\" , \"functional\" , \"custom-client\" , \"mezon\" , \"pdo-crud\" , \"rest-client\" , \"rest-exception\" , \"router\" , \"service\" , \"singleton\" , \"template-engine\" , \"crud-service\"\n\t\t\t] , \n\t\t\t\"path\" : \"D:/job/YandexDisk/mezon/vendor/\"\n\t\t}\n\t]\n}" , 
+    './build.json' : "{\n\t\"vendor-repo\" : [\n\t\t{\n\t\t\t\"vendors\" : [ \n\t\t\t\t\"auth-php-client\" , \"author-php-client\" , \"dns-client\" , \"auth-security-provider\"\n\t\t\t] , \n\t\t\t\"path\" : \"D:/job/YandexDisk/enterprise/\"\n\t\t} , \n\t\t{\n\t\t\t\"vendors\" : [ \n\t\t\t\t\"conf\" , \"functional\" , \"custom-client\" , \"mezon\" , \"pdo-crud\" , \"rest-client\" , \"rest-exception\" , \"router\" , \"service\" , \"singleton\" , \"template-engine\" , \"crud-service\"\n\t\t\t] , \n\t\t\t\"path\" : \"D:/job/YandexDisk/mezon/vendor/\"\n\t\t}\n\t]\n}" ,
 
     './index.php' : "<?php\n\
 require_once ('./dns/records.php');\n\
@@ -263,7 +263,7 @@ require_once ('./conf/conf.php');\n\
 \n\
 // run service\n\
 Service::launch('{service-class-name}Service', 'ServiceRESTTransport', 'AuthSecurityProvider');\n\
-?>" , 
+?>" ,
 
     './tests/{service-class-name}ServiceTest.php' : "<?php\n\
 require_once (__DIR__ . '/../dns/records.php');\n\
@@ -290,7 +290,7 @@ class {service-class-name}ServiceTest extends CRUDServiceTests\n\
 }\n\
 \n\
 ?>" ,
-    './vendor/{service-name}/tests/{service-class-name}UnitTest.php' : "<?php\n\nrequire_once (__DIR__ . '/../../service/vendor/service-security-provider/service-security-provider.php');\n\nrequire_once (__DIR__ . '/../../auth-security-provider/auth-security-provider.php');\n\nrequire_once (__DIR__ . '/../../crud-service/vendor/crud-service-unit-tests/crud-service-unit-tests.php');\n\nrequire_once (__DIR__ . '/../vendor/{service-name}-logic/{service-name}-logic.php');\n\nrequire_once (__DIR__ . '/../{service-name}.php');\n\n/**\n * Unit test\n *\n * @author Admin\n */\nclass {service-class-name}UnitTest extends CRUDServiceUnitTests\n{\n\n\t/**\n\t * Constructor.\n\t */\n\tpublic function __construct()\n\t{\n\t\tparent::__construct('{service-class-name}Service');\n\t}\n}\n\n?>" , 
+    './vendor/{service-name}/tests/{service-class-name}UnitTest.php' : "<?php\n\nrequire_once (__DIR__ . '/../../service/vendor/service-security-provider/service-security-provider.php');\n\nrequire_once (__DIR__ . '/../../auth-security-provider/auth-security-provider.php');\n\nrequire_once (__DIR__ . '/../../crud-service/vendor/crud-service-unit-tests/crud-service-unit-tests.php');\n\nrequire_once (__DIR__ . '/../vendor/{service-name}-logic/{service-name}-logic.php');\n\nrequire_once (__DIR__ . '/../{service-name}.php');\n\n/**\n * Unit test\n *\n * @author Admin\n */\nclass {service-class-name}UnitTest extends CRUDServiceUnitTests\n{\n\n\t/**\n\t * Constructor.\n\t */\n\tpublic function __construct()\n\t{\n\t\tparent::__construct('{service-class-name}Service');\n\t}\n}\n\n?>" ,
     './vendor/{service-name}/{service-name}.php' : "<?php\n\
 require_once (__DIR__ . '/../../dns/records.php');\n\n\
 require_once (__DIR__ . '/../dns-client/dns-client.php');\n\n\
@@ -314,9 +314,9 @@ parent::__construct([\n\
 \t\t\t'entity-name' => '{service-name}',\n\
 \t\t\t'layout' => []\n\
 \t\t], $ServiceTransport, $SecurityProvider, $ServiceLogic, $ServiceModel);\n\t\
-}\n}\n\n?>" , 
+}\n}\n\n?>" ,
     './vendor/{service-name}/vendor/{service-name}-logic/{service-name}-logic.php' : "<?php\n\n/**\n * Service logic\n * \n * @author \n */\nclass {service-class-name}Logic extends CRUDServiceLogic\n{\n}\n\n?>" ,
-    './vendor/{service-name}/vendor/{service-name}-logic/tests/{service-class-name}LogicUnitTest.php' : "<?php\nrequire_once (__DIR__ . '/../../../../functional/functional.php');\nrequire_once (__DIR__ . '/../../../../router/router.php');\nrequire_once (__DIR__ . '/../../../../service/vendor/service-logic/service-logic.php');\nrequire_once (__DIR__ . '/../../../../service/vendor/service-logic/vendor/service-logic-unit-tests/service-logic-unit-tests.php');\nrequire_once (__DIR__ . '/../../../../service/vendor/service-console-transport/service-console-transport.php');\nrequire_once (__DIR__ . '/../../../../service/vendor/service-console-transport/vendor/console-request-params/console-request-params.php');\nrequire_once (__DIR__ . '/../../../../service/vendor/service-security-provider/service-security-provider.php');\nrequire_once (__DIR__ . '/../../../../service/vendor/service-mock-security-provider/service-mock-security-provider.php');\n\nrequire_once (__DIR__ . '/../../../../crud-service/vendor/crud-service-logic/vendor/crud-service-logic-unit-tests/crud-service-logic-unit-tests.php');\n\nrequire_once (__DIR__ . '/../{service-name}-logic.php');\n\nclass {service-class-name}LogicUnitTest extends CRUDServiceLogicUnitTests\n{\n\n\t/**\n\t * Constructor.\n\t */\n\tpublic function __construct()\n\t{\n\t\tparent::__construct();\n\n\t\t$this->ClassName = '{service-class-name}Logic';\n\t}\n}\n\n?>" , 
+    './vendor/{service-name}/vendor/{service-name}-logic/tests/{service-class-name}LogicUnitTest.php' : "<?php\nrequire_once (__DIR__ . '/../../../../functional/functional.php');\nrequire_once (__DIR__ . '/../../../../router/router.php');\nrequire_once (__DIR__ . '/../../../../service/vendor/service-logic/service-logic.php');\nrequire_once (__DIR__ . '/../../../../service/vendor/service-logic/vendor/service-logic-unit-tests/service-logic-unit-tests.php');\nrequire_once (__DIR__ . '/../../../../service/vendor/service-console-transport/service-console-transport.php');\nrequire_once (__DIR__ . '/../../../../service/vendor/service-console-transport/vendor/console-request-params/console-request-params.php');\nrequire_once (__DIR__ . '/../../../../service/vendor/service-security-provider/service-security-provider.php');\nrequire_once (__DIR__ . '/../../../../service/vendor/service-mock-security-provider/service-mock-security-provider.php');\n\nrequire_once (__DIR__ . '/../../../../crud-service/vendor/crud-service-logic/vendor/crud-service-logic-unit-tests/crud-service-logic-unit-tests.php');\n\nrequire_once (__DIR__ . '/../{service-name}-logic.php');\n\nclass {service-class-name}LogicUnitTest extends CRUDServiceLogicUnitTests\n{\n\n\t/**\n\t * Constructor.\n\t */\n\tpublic function __construct()\n\t{\n\t\tparent::__construct();\n\n\t\t$this->ClassName = '{service-class-name}Logic';\n\t}\n}\n\n?>" ,
     './vendor/{service-name}/vendor/{service-name}-logic/phpunit.xml' : "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<phpunit xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:noNamespaceSchemaLocation=\"http://schema.phpunit.de/7.0/phpunit.xsd\" backupGlobals=\"false\" colors=\"true\">\n\t<php>\n\t\t<ini name=\"error_reporting\" value=\"-1\" />\n\t</php>\n\n\t<testsuites>\n\t\t<testsuite name=\"Test Suite\">\n\t\t\t<directory>tests</directory>\n\t\t</testsuite>\n\t</testsuites>\n\n\t<filter>\n\t\t<whitelist>\n\t\t\t<directory>./</directory>\n\t\t\t<exclude>\n\t\t\t\t\t<directory>./tests</directory>\n\t\t\t</exclude>\n\t\t</whitelist>\n\t</filter>\n\n\t<logging>\n\t\t<log type=\"coverage-html\" target=\"./tmp/coverage-phpunit.html\"></log>\n\t\t<log type=\"coverage-text\" target=\"php://stdout\" showOnlySummary=\"true\"></log>\n\t</logging>\n</phpunit>" ,
 
     './vendor/{service-name}/vendor/{service-name}-model/{service-name}-model.php' : "<?php\n\
@@ -331,7 +331,7 @@ class {service-class-name}Model extends CRUDServiceModel\n\
 {\n\
 }\n\
 \n\
-?>" , 
+?>" ,
     './conf/conf.php' : "<?php\n\
 if (isset($_SERVER['HTTP_HOST']) && $_SERVER['HTTP_HOST'] == 'prod-srv') {\n\
     add_connection_to_config('default-db-connection', 'mysql:dbname={service-name};host=localhost', 'root', '');\n\
@@ -344,8 +344,8 @@ if (isset($_SERVER['HTTP_HOST']) && $_SERVER['HTTP_HOST'] == 'prod-srv') {\n\
 ?>"
 }
 
-not_skippable_vendor_files = [ 
-    '__pycache__' , '/tmp/' , '\\tmp\\' , '\\tmp/' , '/tmp\\' ,
+skippable_vendor_files = [ 
+    '__pycache__' , '/tmp/' , '\\tmp\\' , '\\tmp/' , '/tmp\\' , 'cache/cache' , 'cahce\\cache' ,
     'phpMyAdmin' , '.settings' , '.buildpath' , '.project' , '.pydevproject' , '.git' , '.sass', '.map' , '.scss' , '.pyc'
 ]
 
@@ -484,7 +484,7 @@ def get_updated_files_ex(src_path, dst_path):
     files = build_recursive_dir_tree(src_path)
 
     # Filtering files needed to be skipped
-    files = not_skippable_masks_files(not_skippable_vendor_files , files)
+    files = not_skippable_masks_files(skippable_vendor_files , files)
 
     result = [];
 
@@ -582,6 +582,7 @@ def copy_files_to_ftp(ftp_session , files , local_path , server_path):
     if(len(files)):
         for file in files:
             path = os.path.dirname(os.path.relpath(file , local_path))
+
             file_stream = open(file , 'rb')
 
             make_ftp_folder_structure(ftp_session , path)
@@ -601,10 +602,10 @@ def copy_files_to_ftp(ftp_session , files , local_path , server_path):
 #
 #    Method sends sources to FTP server
 #
-def copy_sources_to_ftp(host , login , password , server_path , files):
+def copy_sources_to_ftp(host , login , password , server_path , files , local_path):
     ftp_session = make_ftp_connection_to_path(host , login , password , server_path)
 
-    copy_files_to_ftp(ftp_session , files , './' , server_path)
+    copy_files_to_ftp(ftp_session , files , local_path , server_path)
 
     ftp_session.quit()
 
@@ -634,19 +635,19 @@ def get_files_to_deploy(dir , only_updated=True):
 #
 #    Method copies all sources to ftp server
 #
-def redeploy_to_ftp(host , login , password , server_path):
-    files = get_files_to_deploy('./' , False);
+def redeploy_to_ftp(host , login , password , server_path , local_path='./'):
+    files = get_files_to_deploy(local_path , False);
 
-    copy_sources_to_ftp(host , login , password , server_path , files)
+    copy_sources_to_ftp(host , login , password , server_path , files , local_path)
 
 
 #
 #    Method copies diff sources to ftp server
 #
-def deploy_to_ftp(host , login , password , server_path):
-    files = get_files_to_deploy('./' , True);
+def deploy_to_ftp(host , login , password , server_path , local_path='./'):
+    files = get_files_to_deploy(local_path , True);
 
-    copy_sources_to_ftp(host , login , password , server_path , files)
+    copy_sources_to_ftp(host , login , password , server_path , files , local_path)
 
 
 #
@@ -835,7 +836,7 @@ def upload_component_sources(files , component , src_path , dst_path , action):
     for file in files:
         print('UPLOADED: ' + str(counter) + ' of ' + str(len(files)))
 
-        if(not_skippable_masks_file(not_skippable_vendor_files , file)):
+        if(not_skippable_masks_file(skippable_vendor_files , file)):
             try:
                 to_path = dst_path + os.path.relpath(file , src_path)
                 os.makedirs(os.path.dirname(to_path) , exist_ok=True)
@@ -990,22 +991,26 @@ def process_repo_sections(config):
     if('temporary-repo' in config):
         process_temporary_repo_step(config.get('temporary-repo'))
 
+    if('folder' in config):
+    	for batch in config.get('folder'):
+        	process_self('' , batch.get('src-path') , batch.get('dst-path') , 'COPY' , True)
+
 
 #
 #    Process ftp step
 #
 def process_ftp_section(config, step):
     if(step in config):
+        host = config.get(step).get('host')
+        user = config.get(step).get('user')
+        password = config.get(step).get('password')
+        dst_path = config.get(step).get('dst-path', config.get(step).get('path'))
+        src_path = config.get(step).get('src-path', './')
+
         if 'mode' in config.get(step).keys() and config.get(step).get('mode') == 'redeploy':
-            redeploy_to_ftp(
-                config.get(step).get('host') , config.get(step).get('user') ,
-                config.get(step).get('password') , config.get(step).get('path')
-            )
+            redeploy_to_ftp(host, user, password, dst_path, src_path)
         else:
-            deploy_to_ftp(
-                config.get(step).get('host') , config.get(step).get('user') ,
-                config.get(step).get('password') , config.get(step).get('path')
-            )
+            deploy_to_ftp(host, user, password, dst_path, src_path)
 
 
 #
@@ -1051,6 +1056,10 @@ def run():
 
     except Exception as Err:
         cancel(Err)
+    
+    except KeyboardInterrupt as Err:
+    	clear_temporary_vendors()
+    	print("\nStopped by user")
 
 
 #
