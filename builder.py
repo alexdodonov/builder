@@ -924,7 +924,7 @@ def process_temporary_repo_step(batches):
 #
 def process_tests_step(tests):
     for test in tests:
-        run_phpunit(test , os.path.basename(os.path.dirname(test)))
+        run_phpunit(test, test)
 
 
 # 
