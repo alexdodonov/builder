@@ -609,9 +609,6 @@ def copy_sources_to_ftp(host , login , password , server_path , files , local_pa
 
     ftp_session.quit()
 
-    # store upload time, this will fix bug when after deploy tests and we need to redeploy sources once again
-    store_date_time()
-
 
 #
 #    Method returns a list of updated or all prohect's filestobe deployed
@@ -1026,6 +1023,9 @@ def run_script(config):
             process_tests_step(config.get('tests'))
 
         process_ftp_section(config, 'ftp')
+
+    # store upload time, this will fix bug when after deploy tests and we need to redeploy sources once again
+    store_date_time()
 
 
 #
