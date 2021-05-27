@@ -90,8 +90,4 @@ You can prepend and postpend your deploy command with testing section. If tests 
 }
 ```
 
-More documentation can be found here: [https://gitlab.com/aeon.org/builder/wikis/builder.py-home](https://gitlab.com/aeon.org/builder/wikis/builder.py-home)
-
 If you have any questions or advises - feel free to contact with the author by email [alexey@dodonov.pro](mailto:alexey@dodonov.pro)
-
-Or create ticket here [https://gitlab.com/aeon.org/builder/issues](https://gitlab.com/aeon.org/builder/issues)
